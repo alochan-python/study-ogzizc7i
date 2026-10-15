@@ -1,0 +1,631 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'unsafe-inline'; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; base-uri 'none'; form-action 'none'">
+<meta name="robots" content="noindex, nofollow">
+<meta name="referrer" content="no-referrer">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="学習計画">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#f3f5f9">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" href="apple-touch-icon.png">
+<title>中1中間考査 学習計画</title>
+<style>
+:root { color-scheme: light dark; padding-top: env(safe-area-inset-top, 0px); padding-bottom: env(safe-area-inset-bottom, 0px); }
+body { margin: 0; }
+[hidden] { display: none !important; }
+</style>
+<style>
+/* レイアウト: 1列のノート。上に考査カウントダウン → 日付タブ → その日の時間割（済ボタンつき）→ 約束ごと */
+:root {
+  --bg: #f3f5f9;
+  --sheet: #ffffff;
+  --ink: #1d2433;
+  --ink-2: #48526a;
+  --muted: #687189;
+  --rule: #dfe4ee;
+  --rule-strong: #c3cbdb;
+  --pen: #2c4fb8;
+  --pen-tint: #e9eefc;
+  --shu: #cf3a1f;
+  --shu-tint: #fdebe6;
+  --done-ink: #8a92a5;
+  --sci: #179f6f;
+  --math: #2a78d6;
+  --soc: #d18e00;
+  --jpn: #d4567f;
+  --eng: #5b4bc4;
+  --etc: #9aa2b4;
+  --font-display: 'Hiragino Maru Gothic ProN', 'Hiragino Maru Gothic Pro', 'Zen Maru Gothic', 'BIZ UDPGothic', 'Hiragino Sans', 'Yu Gothic', sans-serif;
+  --font-body: 'Hiragino Sans', 'Hiragino Kaku Gothic ProN', 'BIZ UDPGothic', 'Yu Gothic', 'Meiryo', sans-serif;
+  --radius: 14px;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #11141b; --sheet: #191d27; --ink: #e9ecf3; --ink-2: #b9c0cf; --muted: #8e97aa;
+    --rule: #2a303e; --rule-strong: #3b4354; --pen: #93a9ff; --pen-tint: #232c47;
+    --shu: #ff6b4f; --shu-tint: #3a2019; --done-ink: #7d8598;
+    --sci: #3cc493; --math: #5ea0f0; --soc: #f0b33a; --jpn: #ef84a8; --eng: #9a8cf0; --etc: #7c8496;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #11141b; --sheet: #191d27; --ink: #e9ecf3; --ink-2: #b9c0cf; --muted: #8e97aa;
+  --rule: #2a303e; --rule-strong: #3b4354; --pen: #93a9ff; --pen-tint: #232c47;
+  --shu: #ff6b4f; --shu-tint: #3a2019; --done-ink: #7d8598;
+  --sci: #3cc493; --math: #5ea0f0; --soc: #f0b33a; --jpn: #ef84a8; --eng: #9a8cf0; --etc: #7c8496;
+  color-scheme: dark;
+}
+
+* { box-sizing: border-box; }
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+  -webkit-text-size-adjust: 100%;
+}
+h1, h2, h3, p, ol, ul { margin: 0; padding: 0; }
+ol, ul { list-style: none; }
+button, input, textarea { font: inherit; color: inherit; }
+button { cursor: pointer; -webkit-tap-highlight-color: transparent; touch-action: manipulation; }
+:focus-visible { outline: 3px solid var(--pen); outline-offset: 2px; }
+
+.wrap {
+  max-width: 900px;
+  margin: 0 auto;
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+  padding-block: 20px 48px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 18px;
+}
+.wrap > * { min-width: 0; }
+
+/* ---- 見出し ---- */
+.top { display: flex; flex-wrap: wrap; align-items: baseline; justify-content: space-between; gap: 4px 16px; }
+.top h1 { font-family: var(--font-display); font-weight: 900; font-size: clamp(22px, 3.4vw, 30px); line-height: 1.25; text-wrap: balance; }
+.sync { font-size: 13px; color: var(--muted); display: inline-flex; align-items: center; gap: 6px; }
+.sync::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: var(--etc); }
+.sync[data-mode="cloud"]::before { background: var(--sci); }
+.sync[data-mode="readonly"]::before, .sync[data-mode="error"]::before { background: var(--shu); }
+
+/* ---- 考査カウントダウン ---- */
+.exams { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+.exam {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 10px 12px 12px;
+  display: grid;
+  gap: 2px;
+  min-width: 0;
+}
+.exam-date { font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; }
+.exam-subj { font-family: var(--font-display); font-weight: 700; font-size: 18px; line-height: 1.3; }
+.exam-left { font-family: var(--font-display); font-weight: 900; font-size: 15px; color: var(--shu); }
+.exam-left b { font-size: 26px; font-variant-numeric: tabular-nums; }
+.exam.is-today { border-color: var(--shu); box-shadow: 0 0 0 2px var(--shu) inset; }
+.exam.is-past { opacity: .55; }
+.exam.is-past .exam-left { color: var(--muted); }
+
+/* ---- 日付タブ ---- */
+.days {
+  display: grid;
+  grid-template-columns: repeat(9, minmax(0, 1fr));
+  gap: 6px;
+}
+.tab {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  padding: 8px 2px 8px;
+  border: 1px solid var(--rule);
+  border-radius: 12px;
+  background: var(--sheet);
+  min-width: 0;
+  min-height: 72px;
+  position: relative;
+}
+.tab-w { font-size: 12px; color: var(--muted); }
+.tab-d { font-family: var(--font-display); font-weight: 900; font-size: 22px; line-height: 1.1; font-variant-numeric: tabular-nums; }
+.tab-bar { width: 70%; height: 5px; border-radius: 3px; background: var(--rule); overflow: hidden; }
+.tab-bar i { display: block; height: 100%; width: 0; background: var(--shu); border-radius: 3px; }
+.tab[aria-selected="true"] { background: var(--ink); border-color: var(--ink); color: var(--sheet); }
+.tab[aria-selected="true"] .tab-w { color: var(--sheet); opacity: .8; }
+.tab[aria-selected="true"] .tab-bar { background: color-mix(in srgb, var(--sheet) 30%, transparent); }
+.tab.is-today::after {
+  content: '今日';
+  position: absolute; top: -9px; left: 50%; transform: translateX(-50%);
+  font-size: 10px; font-weight: 700; line-height: 1; padding: 3px 6px; border-radius: 999px;
+  background: var(--pen); color: var(--sheet); white-space: nowrap;
+}
+.tab.is-exam .tab-w::after { content: '・考査'; color: var(--shu); font-weight: 700; }
+.tab[aria-selected="true"].is-exam .tab-w::after { color: inherit; }
+.tab.is-complete .tab-d { color: var(--shu); }
+.tab[aria-selected="true"].is-complete .tab-d { color: var(--sheet); }
+
+/* ---- その日のノート ---- */
+.sheet {
+  background: var(--sheet);
+  border: 1px solid var(--rule);
+  border-radius: var(--radius);
+  padding: 18px 18px 20px;
+  display: grid;
+  gap: 14px;
+}
+.day-head { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 8px 16px; align-items: start; }
+.day-title { font-family: var(--font-display); font-weight: 900; font-size: clamp(24px, 3.6vw, 32px); line-height: 1.2; }
+.day-note { grid-column: 1 / -1; color: var(--ink-2); font-size: 15px; }
+.progress { grid-column: 1 / -1; display: flex; align-items: center; gap: 12px; }
+.progress-track { flex: 1; height: 12px; border-radius: 6px; background: var(--shu-tint); overflow: hidden; }
+.progress-fill { height: 100%; width: 0; background: var(--shu); border-radius: 6px; transition: width .35s ease; }
+.progress-text { font-family: var(--font-display); font-weight: 700; font-size: 16px; font-variant-numeric: tabular-nums; white-space: nowrap; }
+.progress-text b { font-size: 22px; color: var(--shu); }
+
+.bigstamp {
+  width: 84px; height: 84px; border-radius: 50%;
+  border: 4px solid var(--shu); color: var(--shu);
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 900; font-size: 40px; line-height: 1;
+  transform: rotate(-12deg);
+  background: color-mix(in srgb, var(--sheet) 85%, transparent);
+}
+.bigstamp.pop { animation: press .45s cubic-bezier(.2, 1.4, .4, 1) both; }
+@keyframes press { 0% { opacity: 0; transform: rotate(-12deg) scale(2); } 60% { opacity: 1; transform: rotate(-12deg) scale(.92); } 100% { transform: rotate(-12deg) scale(1); } }
+
+.rows { display: grid; }
+.row {
+  display: grid;
+  grid-template-columns: 92px minmax(0, 1fr) 64px;
+  gap: 4px 14px;
+  align-items: start;
+  padding: 14px 4px 14px 0;
+  border-top: 1px dashed var(--rule-strong);
+}
+.row:first-child { border-top: 0; }
+.time { font-variant-numeric: tabular-nums; font-weight: 700; font-size: 16px; line-height: 1.3; color: var(--ink-2); padding-top: 2px; }
+.time small { display: block; font-weight: 400; font-size: 13px; color: var(--muted); }
+.what { min-width: 0; display: grid; gap: 4px; }
+.subj { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; font-family: var(--font-display); font-weight: 700; font-size: 18px; line-height: 1.3; }
+.subj::before { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--c, var(--etc)); flex: none; }
+.tag { font-family: var(--font-body); font-size: 12px; font-weight: 700; line-height: 1; padding: 4px 7px; border-radius: 999px; }
+.tag-now { background: var(--pen); color: var(--sheet); }
+.tag-next { background: var(--pen-tint); color: var(--pen); }
+.tag-exam { background: var(--shu); color: var(--sheet); }
+.task { font-size: 16px; color: var(--ink); }
+.pages {
+  margin-top: 4px;
+  width: 100%;
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--rule);
+  border-radius: 8px;
+  background: var(--bg);
+  font-size: 16px;
+}
+.pages::placeholder { color: var(--muted); }
+.pages:focus { outline: 2px solid var(--pen); border-color: transparent; background: var(--sheet); }
+
+.check {
+  width: 60px; height: 60px; border-radius: 50%;
+  border: 2.5px dashed var(--rule-strong);
+  background: var(--sheet);
+  color: var(--rule-strong);
+  display: grid; place-items: center;
+  font-family: var(--font-display); font-weight: 900; font-size: 24px; line-height: 1;
+  padding: 0;
+  justify-self: end;
+}
+.check:hover { border-color: var(--shu); color: var(--shu); }
+.row.is-done .check { border: 3px solid var(--shu); color: var(--shu); background: var(--shu-tint); transform: rotate(-10deg); }
+.row.is-done .check.pop { animation: press .4s cubic-bezier(.2, 1.4, .4, 1) both; }
+.row.is-done .task, .row.is-done .subj { color: var(--done-ink); }
+.row.is-now { background: linear-gradient(90deg, var(--pen-tint), transparent 70%); border-radius: 10px; }
+.row.is-exam .subj { color: var(--shu); }
+
+.memo { display: grid; gap: 6px; padding-top: 6px; border-top: 2px solid var(--rule); }
+.memo span { font-weight: 700; font-size: 15px; }
+.memo textarea {
+  width: 100%; min-height: 84px; resize: vertical;
+  padding: 10px 12px; border: 1px solid var(--rule); border-radius: 10px;
+  background: var(--bg); font-size: 16px; line-height: 1.6;
+}
+.memo textarea:focus { outline: 2px solid var(--pen); border-color: transparent; background: var(--sheet); }
+.done-msg { font-family: var(--font-display); font-weight: 700; color: var(--shu); font-size: 17px; }
+
+/* ---- 約束ごと ---- */
+.rules { display: grid; gap: 10px; }
+.rules h2 { font-family: var(--font-display); font-weight: 900; font-size: 20px; }
+.rule-box { background: var(--sheet); border: 1px solid var(--rule); border-radius: var(--radius); padding: 14px 16px; display: grid; gap: 8px; }
+.rule-box p { font-size: 15px; color: var(--ink-2); }
+.rule-box p strong { color: var(--ink); }
+.steps { display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.step { display: grid; justify-items: center; padding: 8px 12px; border-radius: 10px; background: var(--pen-tint); min-width: 92px; }
+.step b { font-family: var(--font-display); font-size: 20px; color: var(--pen); font-variant-numeric: tabular-nums; }
+.step span { font-size: 13px; color: var(--ink-2); }
+.arrow { color: var(--muted); }
+.fine { font-size: 13px; color: var(--muted); }
+
+.notice { font-size: 14px; padding: 10px 12px; border-radius: 10px; background: var(--shu-tint); color: var(--ink); }
+
+@media (max-width: 700px) {
+  .exams { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .days { grid-template-columns: repeat(9, minmax(52px, 1fr)); overflow-x: auto; padding-top: 10px; margin-top: -10px; scrollbar-width: none; }
+  .row { grid-template-columns: 64px minmax(0, 1fr) 56px; gap: 4px 10px; }
+  .check { width: 52px; height: 52px; font-size: 21px; }
+  .time { font-size: 14px; }
+  .bigstamp { width: 64px; height: 64px; font-size: 30px; }
+  .sheet { padding: 14px 12px 16px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { animation-duration: .001ms !important; transition-duration: .001ms !important; }
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header class="top">
+    <h1 id="title">中1 中間考査 学習計画</h1>
+    <p class="sync" id="sync" data-mode="local" aria-live="polite">読み込み中…</p>
+  </header>
+
+  <section class="exams" id="exams" aria-label="考査の日程"></section>
+
+  <div class="days-wrap">
+    <nav class="days" id="days" role="tablist" aria-label="日付"></nav>
+  </div>
+
+  <main class="sheet" id="sheet" role="tabpanel" aria-labelledby="day-title">
+    <div class="day-head">
+      <h2 class="day-title" id="day-title"></h2>
+      <div class="bigstamp" id="bigstamp" hidden aria-hidden="true">済</div>
+      <p class="day-note" id="day-note"></p>
+      <div class="progress">
+        <div class="progress-track" role="progressbar" aria-label="この日の済" aria-valuemin="0" id="progress-bar">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+        <span class="progress-text" id="progress-text"></span>
+      </div>
+    </div>
+    <p class="done-msg" id="done-msg" hidden>この日の計画、ぜんぶ済！ おつかれさま。</p>
+    <ol class="rows" id="rows"></ol>
+    <label class="memo" for="memo">
+      <span id="memo-label">明日もう一度やる問題／学校からの追加指示</span>
+      <textarea id="memo" placeholder="例：化学p.74の3、密度の計算をもう一度"></textarea>
+    </label>
+  </main>
+
+  <section class="rules" aria-labelledby="rules-title">
+    <h2 id="rules-title">やり方の約束</h2>
+    <div class="rule-box">
+      <p><strong>50分枠</strong>　終わらなかった分は、次の同じ教科の枠の最初にやる。</p>
+      <div class="steps" aria-label="50分枠の進め方">
+        <div class="step"><b>30分</b><span>自力で解く</span></div><span class="arrow" aria-hidden="true">→</span>
+        <div class="step"><b>5分</b><span>採点</span></div><span class="arrow" aria-hidden="true">→</span>
+        <div class="step"><b>5分</b><span>根拠を確認</span></div><span class="arrow" aria-hidden="true">→</span>
+        <div class="step"><b>10分</b><span>解き直し</span></div>
+      </div>
+    </div>
+    <div class="rule-box" id="notes"></div>
+    <p class="fine">済の記録と書きこみは、このiPadに自動で保存されます（ほかの端末とは共有されません）。</p>
+  </section>
+</div>
+
+<script>
+(() => {
+  const PLAN = {"title":"中１中間考査　10/15 11:00開始・ページ別実行計画","exams":[{"label":"10/20（火）","p1":"生物（40分）","p2":"なし","range":"教科書p.84～97・114・116／プリントNo.10～13"},{"label":"10/21（水）","p1":"化学","p2":"なし","range":"教科書p.167～171・173～181・190～194ほか"},{"label":"10/22（木）","p1":"数学","p2":"社会","range":"数学p.50～75／社会3単元"},{"label":"10/23（金）","p1":"国語","p2":"なし","range":"教科書p.116～127・252～257"}],"notes":["試験まで宿題なし。英語枠はDMM英会話。10/19～23は6:10～6:20朝学習、6:30頃出発。","理科：新中学問題集→プリント→教科書等。社会：教科書ワーク→教科書。数学：Vテキスト。","漢字：当日夜→翌朝→3日後→試験前日。読みから書く→採点→誤答だけ練習→答えなしで再テスト。","国語：漢字→意味調べ→進研ゼミ→馬渕→教科書ワーク。スタサプは主教材の誤答が済んだ場合のみ。"],"rule":"50分枠：自力で解く30分→採点5分→根拠確認5分→解き直し10分。未完了は次の同教科枠の先頭へ。","days":[{"date":"2026-10-15","title":"10/15（木）","note":"11:00開始。各50分枠の間は10分休憩。12:10～13:00昼食、18:00～19:00夕食・休養。","rows":[{"time":"11:00–11:50","subject":"生物・地学","task":"新中学問題集No.140～142を自力で解く→採点。誤答番号に印","exam":false},{"time":"12:00–12:10","subject":"漢字・初回","task":"漢字p.8～9：読みから書く→採点→間違えた字だけ練習→答えを隠して再テスト","exam":false},{"time":"13:00–13:50","subject":"化学","task":"新中学問題集p.72の3・p.74～77。密度など計算は途中式も書く","exam":false},{"time":"14:00–14:50","subject":"数学","task":"Vテキストp.50～58を解く→採点→誤答に印","exam":false},{"time":"15:00–15:50","subject":"社会","task":"教科書ワークp.58～61→間違いだけ教科書で根拠確認。単元名は実物に従う","exam":false},{"time":"16:00–16:50","subject":"生物・地学","task":"新中学問題集No.143～145→No.140～142の誤答を再挑戦","exam":false},{"time":"17:00–17:30","subject":"国語・意味","task":"竹取物語：教科書p.116～121の授業で扱った語句。意味を隠して答える→誤答を記録","exam":false},{"time":"19:00–19:50","subject":"化学","task":"新中学問題集p.80～82→昼のp.72の3・p.74～77の誤答を再挑戦","exam":false},{"time":"20:00–20:10","subject":"漢字・当日復習","task":"p.8～9を読みから再テスト。昼に間違えた字を優先。正解した字も一度確認","exam":false},{"time":"20:10–20:30","subject":"DMM英会話","task":"DMM英会話を受講。時間枠を維持するため20分で終了","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"},{"date":"2026-10-16","title":"10/16（金）","note":"学校休み・固定予定なし。12:00～13:00昼食、18:00～19:00夕食。漢字は翌朝と当日夜に再テスト。","rows":[{"time":"08:45–09:00","subject":"漢字・翌日復習","task":"p.8～9：答えなしで書く→誤答だけ再練習・再テスト","exam":false},{"time":"09:00–09:50","subject":"化学","task":"新中学問題集p.83～85→p.80～82の誤答を再テスト","exam":false},{"time":"10:00–10:50","subject":"生物・地学","task":"新中学問題集No.140～145の昨日の誤答→プリントNo.10・11","exam":false},{"time":"11:00–11:50","subject":"数学","task":"Vテキストp.59～64→p.50～58の誤答を再テスト","exam":false},{"time":"13:00–13:50","subject":"社会","task":"教科書ワークp.62～64→p.58～61の誤答。教科書で理由・地図を確認","exam":false},{"time":"14:00–14:50","subject":"化学","task":"新中学問題集p.86～89を解く→採点→誤答をその場で解き直す","exam":false},{"time":"15:00–15:50","subject":"国語","task":"漢字p.10～11初回15分／竹取物語p.122～127の意味確認15分／進研ゼミp.8～9を20分","exam":false},{"time":"16:00–16:50","subject":"数学","task":"Vテキストp.65～70→今日の誤答を再テスト","exam":false},{"time":"19:00–19:50","subject":"生物・地学","task":"プリントNo.12・13→問題集の誤答。必要箇所を教科書p.84～97・114・116で確認","exam":false},{"time":"20:00–20:10","subject":"漢字・当日復習","task":"p.10～11：読みから書く。p.8～9でまだ間違える字も再テスト","exam":false},{"time":"20:10–20:30","subject":"DMM英会話","task":"DMM英会話を受講。時間枠を維持するため20分で終了","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"},{"date":"2026-10-17","title":"10/17（土）","note":"学校休み。新中学問題集を先に進める。12:00～13:00昼食、18:00～19:00夕食。","rows":[{"time":"08:45–09:00","subject":"漢字・翌日復習","task":"p.10～11の翌日テスト→p.8～9の残る誤答","exam":false},{"time":"09:00–09:50","subject":"化学","task":"新中学問題集p.90～93→p.86～89の誤答を再テスト","exam":false},{"time":"10:00–10:50","subject":"生物・地学","task":"新中学問題集No.140～145の誤答を答えなしで解く→説明・図も確認","exam":false},{"time":"11:00–11:50","subject":"数学","task":"Vテキストp.71～75→p.59～70の誤答を再テスト","exam":false},{"time":"13:00–13:50","subject":"社会","task":"教科書ワークp.65～67→p.62～64の誤答。南米・オセアニア・日本のすがたを確認","exam":false},{"time":"14:00–14:50","subject":"化学","task":"新中学問題集p.95・p.98～99→p.90～93の誤答。指定範囲1周目を完了","exam":false},{"time":"15:00–15:50","subject":"国語","task":"漢字p.24～25初回15分／電車は走るp.252～257の意味確認15分／進研ゼミp.10～11を20分","exam":false},{"time":"16:00–16:50","subject":"化学","task":"サイエンスプリントNo.3の⑭～⑳→新中学問題集の対応する誤答","exam":false},{"time":"19:00–19:50","subject":"国語","task":"進研ゼミp.24～25→竹取物語p.8～11の誤答。本文に解答根拠の線を引く","exam":false},{"time":"20:00–20:10","subject":"漢字・当日復習","task":"p.24～25を答えなしで書く→p.8～11の残る誤答","exam":false},{"time":"20:10–20:30","subject":"DMM英会話","task":"DMM英会話を受講。時間枠を維持するため20分で終了","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"},{"date":"2026-10-18","title":"10/18（日）","note":"17:00～22:00算数塾。15:30以降は休養・食事・移動。帰宅後の学習は追加しない。","rows":[{"time":"08:40–09:00","subject":"漢字・間隔復習","task":"p.8～9＝3日後／p.24～25＝翌日。読みから書く→誤答だけ再テスト","exam":false},{"time":"09:00–09:50","subject":"生物・地学","task":"新中学問題集No.140～145の残る誤答→生物プリントNo.10～13の印付き問題","exam":false},{"time":"10:00–10:50","subject":"化学","task":"新中学問題集p.72の3・74～77・80～85の印付き問題を再テスト","exam":false},{"time":"11:00–11:50","subject":"社会","task":"教科書ワークp.58～67の誤答→教科書で根拠確認→学校プリントの3単元","exam":false},{"time":"13:00–13:50","subject":"化学","task":"新中学問題集p.86～93・95・98～99の印付き問題を再テスト","exam":false},{"time":"14:00–14:50","subject":"国語","task":"馬渕塾問題集：竹取物語・電車は走るの該当ページ。本文の根拠を確認して採点","exam":false},{"time":"15:00–15:20","subject":"DMM英会話","task":"DMM英会話（20分で終了）。翌日の教材を準備","exam":false},{"time":"17:00–22:00","subject":"算数塾","task":"固定予定。帰宅後は就寝準備","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"},{"date":"2026-10-19","title":"10/19（月）","note":"10/19のみ通常授業。朝6:10～6:20、6:30頃出発。夜は20:00開始、19:15最寄り駅着。","rows":[{"time":"06:10–06:20","subject":"漢字・3日後","task":"p.10～11を答えなしで書く→誤答だけ確認。意味調べの語句も口頭確認","exam":false},{"time":"20:00–20:50","subject":"生物・地学","task":"新中学問題集No.140～145の残る誤答→プリントNo.10～13の図・記述","exam":false},{"time":"21:00–21:25","subject":"生物・地学","task":"教科書p.84～97・114・116で誤答の根拠→閉じて説明。翌日の最終確認","exam":false},{"time":"21:25–21:45","subject":"DMM英会話","task":"DMM英会話（20分で終了）。試験の持ち物は開始前に準備。21:45終了","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"},{"date":"2026-10-20","title":"10/20（火）","note":"生物・地学の考査。午後枠は13:00までに帰宅できる想定。19:15以降は通常の火曜塾・移動用に確保。","rows":[{"time":"06:10–06:20","subject":"漢字・3日後","task":"p.24～25を答えなしで書く→誤答だけ再テスト","exam":false},{"time":"08:40","subject":"H.R.","task":"学校指定の教室へ","exam":false},{"time":"09:00–09:50","subject":"生物・地学","task":"学校の正式時間割・問題冊子の指示に従う","exam":true},{"time":"13:00–13:50","subject":"化学","task":"新中学問題集p.72の3・74～77・80～85の残る誤答","exam":false},{"time":"14:00–14:50","subject":"化学","task":"新中学問題集p.86～93・95・98～99の残る誤答","exam":false},{"time":"15:00–15:50","subject":"化学","task":"サイエンスプリントNo.3⑭～⑳→教科書p.167～171・173～181・190～194の必要箇所","exam":false},{"time":"16:00–16:50","subject":"化学・追加","task":"主教材が済んだら便覧p.39・92～97・106～111、新研究p.140～145の対応問題","exam":false},{"time":"17:00–17:20","subject":"DMM英会話","task":"DMM英会話（20分で終了）。化学の持ち物は開始前に準備","exam":false},{"time":"19:15以降","subject":"塾・移動","task":"通常の火曜予定用に確保。塾がなければ夕食後に化学の誤答を20分だけ確認","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"},{"date":"2026-10-21","title":"10/21（水）","note":"化学の考査。午後は13:00までに帰宅できる想定。翌日の数学・社会を優先。","rows":[{"time":"06:10–06:20","subject":"漢字・継続復習","task":"p.8～11・24～25の印付き漢字だけ答えなしで書く","exam":false},{"time":"08:40","subject":"H.R.","task":"学校指定の教室へ","exam":false},{"time":"09:00–09:50","subject":"化学","task":"学校の正式時間割・問題冊子の指示に従う","exam":true},{"time":"13:00–13:50","subject":"数学","task":"Vテキストp.50～62の誤答を自力で解く→採点","exam":false},{"time":"14:00–14:50","subject":"社会","task":"教科書ワークp.58～62の誤答→教科書で地図・理由を確認","exam":false},{"time":"15:00–15:50","subject":"数学","task":"Vテキストp.63～75の誤答。計算・文章題を混ぜて確認","exam":false},{"time":"16:00–16:50","subject":"社会","task":"教科書ワークp.63～67の誤答→学校プリントの南米・オセアニア・日本","exam":false},{"time":"19:00–19:30","subject":"数学・社会","task":"数学15分：残る誤答／社会15分：地図・用語・記述を答えなしで確認","exam":false},{"time":"19:30–19:50","subject":"DMM英会話","task":"DMM英会話（20分で終了）。翌日の持ち物は開始前に準備","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"},{"date":"2026-10-22","title":"10/22（木）","note":"数学・社会の考査。午後は13:00までに帰宅できる想定。国語は指定の優先順で仕上げる。","rows":[{"time":"06:10–06:20","subject":"漢字・試験前日","task":"漢字p.8～11・24～25を読みから全範囲テスト→誤答に印","exam":false},{"time":"08:40","subject":"H.R.","task":"学校指定の教室へ","exam":false},{"time":"09:00–09:50","subject":"数学","task":"方程式：Vテキストp.50～75","exam":true},{"time":"10:10–11:00","subject":"社会","task":"南アメリカ州・オセアニア州・日本のすがた","exam":true},{"time":"13:00–13:50","subject":"国語・意味","task":"教科書p.116～127・252～257の意味調べ語句を答えなしで説明→本文要点","exam":false},{"time":"14:00–14:50","subject":"国語・ゼミ","task":"進研ゼミp.8～11・24～25の誤答を再テスト→本文根拠の確認","exam":false},{"time":"15:00–15:50","subject":"国語・馬渕","task":"馬渕塾問題集の2作品の印付き問題。解答根拠を本文から探す","exam":false},{"time":"16:00–16:50","subject":"国語・ワーク","task":"教科書ワークp.50～53・127→p.94～97・133。時間内は基本問題と誤答を優先","exam":false},{"time":"19:00–19:15","subject":"漢字・最終復習","task":"朝に間違えた漢字を答えなしで書く→まだ迷う字のみ確認","exam":false},{"time":"19:15–19:35","subject":"DMM英会話","task":"DMM英会話（20分で終了）。国語の持ち物は開始前に準備","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"},{"date":"2026-10-23","title":"10/23（金）","note":"国語の考査。朝は最終確認だけ。","rows":[{"time":"06:10–06:20","subject":"漢字・試験当日","task":"p.8～11・24～25で昨日間違えた漢字だけ読みから書く","exam":false},{"time":"08:40","subject":"H.R.","task":"学校指定の教室へ","exam":false},{"time":"09:00–09:50","subject":"国語","task":"竹取物語・電車は走る。漢字・語句・本文の根拠を確認して解答","exam":true},{"time":"終了後","subject":"提出物","task":"提出物の残りを確認","exam":false}],"memoLabel":"明日もう一度やる問題／学校からの追加指示"}]};
+
+  // ---------- 日付 ----------
+  const WEEK = ['日', '月', '火', '水', '木', '金', '土'];
+  const pad = (n) => String(n).padStart(2, '0');
+  const isoOf = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+  const dayNum = (iso) => { const [y, m, d] = iso.split('-').map(Number); return Math.round(Date.UTC(y, m - 1, d) / 864e5); };
+  const weekdayOf = (iso) => { const [y, m, d] = iso.split('-').map(Number); return new Date(y, m - 1, d).getDay(); };
+  const todayIso = () => isoOf(new Date());
+  const minutesNow = () => { const d = new Date(); return d.getHours() * 60 + d.getMinutes(); };
+  const toMin = (t) => { const [h, m] = t.split(':').map(Number); return h * 60 + m; };
+  /** '11:00–11:50' → [660, 710]、'08:40' → [520, 530]、'19:15以降' → [1155, 1440]、'終了後' → null */
+  function span(time) {
+    const m = /^(\d{1,2}:\d{2})(?:\s*[–-]\s*(\d{1,2}:\d{2}))?(以降)?/.exec(time || '');
+    if (!m) return null;
+    const start = toMin(m[1]);
+    const end = m[2] ? toMin(m[2]) : m[3] ? 24 * 60 : start + 10;
+    return [start, end];
+  }
+
+  const EXAM_DATES = { '10/20': '2026-10-20', '10/21': '2026-10-21', '10/22': '2026-10-22', '10/23': '2026-10-23' };
+  const examDays = new Set(Object.values(EXAM_DATES));
+
+  // 教科の色（点の色だけ。文字はいつもインク色）
+  function subjectColor(subject) {
+    if (/生物|地学|化学|理科/.test(subject)) return 'var(--sci)';
+    if (/数学|算数/.test(subject)) return 'var(--math)';
+    if (/社会/.test(subject)) return 'var(--soc)';
+    if (/国語|漢字/.test(subject)) return 'var(--jpn)';
+    if (/英/.test(subject)) return 'var(--eng)';
+    return 'var(--etc)';
+  }
+
+  // ---------- 記録（日付ごと） ----------
+  /** state[date] = { done: {行番号: true}, notes: {行番号: '...'}, memo: '' } */
+  const state = {};
+  const blank = () => ({ done: {}, notes: {}, memo: '' });
+  const dayState = (date) => (state[date] ||= blank());
+  const CACHE_KEY = 'kid-midterm-2026-10';
+
+  function readCache() {
+    try {
+      const raw = localStorage.getItem(CACHE_KEY);
+      if (!raw) return;
+      const parsed = JSON.parse(raw);
+      for (const day of PLAN.days) if (parsed && parsed[day.date]) state[day.date] = normalize(parsed[day.date]);
+    } catch (e) { /* 使えない環境では何もしない */ }
+  }
+  function writeCache() {
+    try {
+      localStorage.setItem(CACHE_KEY, JSON.stringify(state));
+    } catch (e) {
+      setMode('error', '保存できません（プライベートブラウズでは保存されません）');
+    }
+  }
+  function normalize(raw) {
+    const out = blank();
+    if (raw && typeof raw === 'object') {
+      if (raw.done && typeof raw.done === 'object') for (const [k, v] of Object.entries(raw.done)) if (v === true) out.done[k] = true;
+      if (raw.notes && typeof raw.notes === 'object') for (const [k, v] of Object.entries(raw.notes)) if (typeof v === 'string' && v) out.notes[k] = v.slice(0, 500);
+      if (typeof raw.memo === 'string') out.memo = raw.memo.slice(0, 2000);
+    }
+    return out;
+  }
+
+  // ---------- 保存（このiPadのブラウザ内。外部には送らない） ----------
+
+  function setMode(next, text) {
+    const el = document.getElementById('sync');
+    el.dataset.mode = next;
+    el.textContent = text;
+  }
+
+  function persist() {
+    writeCache();
+  }
+
+  // ---------- 画面 ----------
+  let selected = null;
+  const $ = (id) => document.getElementById(id);
+
+  function pickInitialDay() {
+    const t = todayIso();
+    const first = PLAN.days[0].date;
+    const last = PLAN.days[PLAN.days.length - 1].date;
+    if (t < first) return first;
+    if (t > last) return last;
+    return PLAN.days.find((d) => d.date === t) ? t : first;
+  }
+
+  function renderExams() {
+    const t = todayIso();
+    const box = $('exams');
+    box.replaceChildren();
+    for (const ex of PLAN.exams) {
+      const md = ex.label.split('（')[0];
+      const date = EXAM_DATES[md];
+      const left = date ? dayNum(date) - dayNum(t) : null;
+      const card = document.createElement('div');
+      card.className = 'exam' + (left === 0 ? ' is-today' : '') + (left !== null && left < 0 ? ' is-past' : '');
+      const subj = [ex.p1, ex.p2].filter((s) => s && s !== 'なし').map((s) => s.replace(/（.*?）/, '')).join('・');
+      const d = document.createElement('span'); d.className = 'exam-date'; d.textContent = ex.label;
+      const s = document.createElement('span'); s.className = 'exam-subj'; s.textContent = subj;
+      const l = document.createElement('span'); l.className = 'exam-left';
+      if (left === null) l.textContent = '';
+      else if (left > 0) { l.append('あと'); const b = document.createElement('b'); b.textContent = left; l.append(b, '日'); }
+      else if (left === 0) l.textContent = '今日！がんばって';
+      else l.textContent = 'おわり';
+      card.title = ex.range || '';
+      card.append(d, s, l);
+      box.append(card);
+    }
+  }
+
+  function countDone(day) {
+    const st = dayState(day.date);
+    return day.rows.reduce((n, _r, i) => n + (st.done[i] ? 1 : 0), 0);
+  }
+
+  function renderTabs() {
+    const t = todayIso();
+    const nav = $('days');
+    nav.replaceChildren();
+    for (const day of PLAN.days) {
+      const done = countDone(day);
+      const total = day.rows.length;
+      const b = document.createElement('button');
+      b.type = 'button';
+      b.className = 'tab' + (day.date === t ? ' is-today' : '') + (examDays.has(day.date) ? ' is-exam' : '') + (done === total ? ' is-complete' : '');
+      b.setAttribute('role', 'tab');
+      b.setAttribute('aria-selected', String(day.date === selected));
+      b.id = 'tab-' + day.date;
+      const [, m, d] = day.date.split('-').map(Number);
+      b.setAttribute('aria-label', `${m}月${d}日（${WEEK[weekdayOf(day.date)]}） 済 ${done} / ${total}`);
+      const w = document.createElement('span'); w.className = 'tab-w'; w.textContent = WEEK[weekdayOf(day.date)];
+      const dd = document.createElement('span'); dd.className = 'tab-d'; dd.textContent = d;
+      const bar = document.createElement('span'); bar.className = 'tab-bar';
+      const fill = document.createElement('i'); fill.style.width = `${Math.round((done / total) * 100)}%`;
+      bar.append(fill);
+      b.append(w, dd, bar);
+      b.addEventListener('click', () => { selected = day.date; render(true); });
+      nav.append(b);
+    }
+  }
+
+  let builtFor = null;
+  function buildRows(day) {
+    const list = $('rows');
+    list.replaceChildren();
+    day.rows.forEach((row, i) => {
+      const li = document.createElement('li');
+      li.className = 'row' + (row.exam ? ' is-exam' : '');
+      li.dataset.i = i;
+
+      const time = document.createElement('div');
+      time.className = 'time';
+      const parts = String(row.time).split(/[–-]/);
+      time.append(parts[0]);
+      if (parts[1]) { const sm = document.createElement('small'); sm.textContent = '〜' + parts[1]; time.append(sm); }
+
+      const what = document.createElement('div');
+      what.className = 'what';
+      const subj = document.createElement('p');
+      subj.className = 'subj';
+      subj.style.setProperty('--c', subjectColor(row.subject));
+      const name = document.createElement('span'); name.textContent = row.subject;
+      subj.append(name);
+      if (row.exam) { const tag = document.createElement('span'); tag.className = 'tag tag-exam'; tag.textContent = '考査'; subj.append(tag); }
+      const now = document.createElement('span'); now.className = 'tag'; now.hidden = true; subj.append(now);
+      const task = document.createElement('p'); task.className = 'task'; task.textContent = row.task;
+      const pages = document.createElement('input');
+      pages.className = 'pages';
+      pages.type = 'text';
+      pages.id = `pages-${day.date}-${i}`;
+      pages.placeholder = '完了ページ・誤答番号';
+      pages.setAttribute('aria-label', `${row.subject}の完了ページ・誤答番号`);
+      pages.autocomplete = 'off';
+      let timer = null;
+      const savePages = () => {
+        clearTimeout(timer);
+        const st = dayState(day.date);
+        const v = pages.value.slice(0, 500);
+        if ((st.notes[i] || '') === v) return;
+        if (v) st.notes[i] = v; else delete st.notes[i];
+        persist(day.date);
+      };
+      pages.addEventListener('input', () => { clearTimeout(timer); timer = setTimeout(savePages, 900); });
+      pages.addEventListener('change', savePages);
+      pages.addEventListener('blur', savePages);
+      what.append(subj, task, pages);
+
+      const check = document.createElement('button');
+      check.type = 'button';
+      check.className = 'check';
+      check.textContent = '済';
+      check.addEventListener('click', () => toggle(day, i, check));
+
+      li.append(time, what, check);
+      list.append(li);
+    });
+    builtFor = day.date;
+  }
+
+  function toggle(day, i, button) {
+    const st = dayState(day.date);
+    const wasComplete = countDone(day) === day.rows.length;
+    if (st.done[i]) delete st.done[i]; else st.done[i] = true;
+    button.classList.remove('pop');
+    if (st.done[i]) { void button.offsetWidth; button.classList.add('pop'); if (navigator.vibrate) { try { navigator.vibrate(12); } catch (e) { /* なし */ } } }
+    const nowComplete = countDone(day) === day.rows.length;
+    render(false, !wasComplete && nowComplete);
+    persist(day.date);
+  }
+
+  function render(dayChanged = false, celebrate = false) {
+    const day = PLAN.days.find((d) => d.date === selected) || PLAN.days[0];
+    if (dayChanged || builtFor !== day.date) buildRows(day);
+    renderTabs();
+    renderExams();
+
+    const st = dayState(day.date);
+    const [, m, d] = day.date.split('-').map(Number);
+    $('day-title').textContent = `${m}月${d}日（${WEEK[weekdayOf(day.date)]}）`;
+    $('day-note').textContent = day.note || '';
+    $('memo-label').textContent = day.memoLabel || '明日もう一度やる問題／学校からの追加指示';
+
+    const done = countDone(day);
+    const total = day.rows.length;
+    $('progress-fill').style.width = `${Math.round((done / total) * 100)}%`;
+    $('progress-bar').setAttribute('aria-valuemax', String(total));
+    $('progress-bar').setAttribute('aria-valuenow', String(done));
+    $('progress-text').replaceChildren('済 ', Object.assign(document.createElement('b'), { textContent: done }), ` / ${total}`);
+    const complete = done === total;
+    const stamp = $('bigstamp');
+    stamp.hidden = !complete;
+    $('done-msg').hidden = !complete;
+    if (celebrate) { stamp.classList.remove('pop'); void stamp.offsetWidth; stamp.classList.add('pop'); }
+
+    // いま／つぎ（今日の画面だけ）
+    const isToday = day.date === todayIso();
+    const nowMin = minutesNow();
+    let nextMarked = false;
+    let nowIndex = -1;
+    if (isToday) {
+      day.rows.forEach((row, i) => { const s = span(row.time); if (s && nowMin >= s[0] && nowMin < s[1]) nowIndex = i; });
+    }
+    document.querySelectorAll('#rows .row').forEach((li) => {
+      const i = Number(li.dataset.i);
+      const row = day.rows[i];
+      const isDone = Boolean(st.done[i]);
+      li.classList.toggle('is-done', isDone);
+      const btn = li.querySelector('.check');
+      btn.setAttribute('aria-pressed', String(isDone));
+      btn.setAttribute('aria-label', `${row.subject}（${row.time}）を${isDone ? '済にした。押すと取り消し' : '済にする'}`);
+      const input = li.querySelector('.pages');
+      if (document.activeElement !== input) input.value = st.notes[i] || '';
+      const tag = li.querySelector('.tag:not(.tag-exam)');
+      let label = '';
+      if (isToday && i === nowIndex) label = 'いま';
+      else if (isToday && !nextMarked && !isDone && i > nowIndex) {
+        const s = span(row.time);
+        if (s && s[0] >= nowMin) { label = 'つぎ'; nextMarked = true; }
+      }
+      li.classList.toggle('is-now', label === 'いま');
+      tag.hidden = !label;
+      tag.textContent = label;
+      tag.className = 'tag ' + (label === 'いま' ? 'tag-now' : 'tag-next');
+    });
+
+    const memo = $('memo');
+    if (document.activeElement !== memo) memo.value = st.memo || '';
+  }
+
+  // メモ欄
+  let memoTimer = null;
+  function saveMemo() {
+    clearTimeout(memoTimer);
+    const st = dayState(selected);
+    const v = $('memo').value.slice(0, 2000);
+    if (st.memo === v) return;
+    st.memo = v;
+    persist(selected);
+  }
+  $('memo').addEventListener('input', () => { clearTimeout(memoTimer); memoTimer = setTimeout(saveMemo, 900); });
+  $('memo').addEventListener('change', saveMemo);
+  $('memo').addEventListener('blur', saveMemo);
+
+  // 約束ごと（Excelの1枚目の注意書き）
+  const notes = $('notes');
+  for (const text of PLAN.notes) {
+    const p = document.createElement('p');
+    const m = /^([^：:]{1,6})[：:](.*)$/.exec(text);
+    if (m) { const s = document.createElement('strong'); s.textContent = m[1]; p.append(s, '　' + m[2]); }
+    else p.textContent = text;
+    notes.append(p);
+  }
+
+  // 起動
+  readCache();
+  selected = pickInitialDay();
+  setMode('local', 'このiPadに保存');
+  render(true);
+  setInterval(() => render(), 60 * 1000);
+  document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
+})();
+</script>
+</body>
+</html>
